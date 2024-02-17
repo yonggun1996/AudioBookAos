@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -119,6 +120,17 @@ fun SetActivity() {
 
         contentList.add(MySubscribeModel("나의 캐리어", "전영민", "부크크"))
         contentList.add(MySubscribeModel("비전공자를 위한 이해할 수 있는 IT지식", "최원영", "티더블유아이지"))
+        contentList.add(MySubscribeModel("나의 캐리어", "전영민2", "부크크"))
+        contentList.add(MySubscribeModel("비전공자를 위한 이해할 수 있는 IT지식2", "최원영", "티더블유아이지"))
+        contentList.add(MySubscribeModel("나의 캐리어", "전영민3", "부크크"))
+        contentList.add(MySubscribeModel("비전공자를 위한 이해할 수 있는 IT지식3", "최원영", "티더블유아이지"))
+        contentList.add(MySubscribeModel("나의 캐리어", "전영민4", "부크크"))
+        contentList.add(MySubscribeModel("비전공자를 위한 이해할 수 있는 IT지식4", "최원영", "티더블유아이지"))
+        contentList.add(MySubscribeModel("나의 캐리어", "전영민5", "부크크"))
+        contentList.add(MySubscribeModel("비전공자를 위한 이해할 수 있는 IT지식5", "최원영", "티더블유아이지"))
+        contentList.add(MySubscribeModel("비전공자를 위한 이해할 수 있는 IT지식6", "최원영", "티더블유아이지"))
+        contentList.add(MySubscribeModel("나의 캐리어", "전영민6", "부크크"))
+        contentList.add(MySubscribeModel("비전공자를 위한 이해할 수 있는 IT지식7", "최원영", "티더블유아이지"))
 
         LazyColumn(
             modifier = Modifier
@@ -143,7 +155,10 @@ fun ListItem(model: MySubscribeModel) {
     Row() {
         val paddingModifier = Modifier.padding(10.dp)
 
-        Card(elevation = CardDefaults.cardElevation(defaultElevation = 10.dp), modifier = paddingModifier) {
+        Card(
+            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+            modifier = paddingModifier
+        ) {
             Row(
                 // 수평 폭 기기 크기에 맞게 세팅
                 modifier = Modifier.fillMaxWidth(),
@@ -159,41 +174,46 @@ fun ListItem(model: MySubscribeModel) {
                         .size(100.dp)
                         .padding(5.dp)
                 )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ){
+                // 2024.02.17 작가명 추가
+                Column(
+                    modifier = Modifier.weight(8.5f)
+                ) {
                     Text(
                         text = model.bookTitle,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color.Black,
-                        modifier = Modifier.padding(3.dp)
-                            .weight(7f) // 텍스트 영역은 90%
+                        modifier = Modifier
+                            .padding(3.dp)
                     )
-                    IconButton(
-                        // 해당 버튼 클릭 시 상태 변화 값 변경
-                        // dialog을 띄우도록 설정
-                        onClick = { openAlertDialog.value = !openAlertDialog.value },
-                        modifier = Modifier.weight(3f) // 10%
-                    ) {
-                        Icon(imageVector = Icons.Filled.Delete, contentDescription = "구독 목록에서 삭제")
-                    }
+                    Text(
+                        text = model.writerName,
+                        fontSize = 12.sp,
+                        color = Color.DarkGray,
+                        modifier = Modifier.padding(3.dp)
+                    )
+                }
+                IconButton(
+                    // 해당 버튼 클릭 시 상태 변화 값 변경
+                    // dialog을 띄우도록 설정
+                    onClick = { openAlertDialog.value = !openAlertDialog.value },
+                    modifier = Modifier.weight(1.5f) // 10%
+                ) {
+                    Icon(imageVector = Icons.Filled.Delete, contentDescription = "구독 목록에서 삭제")
+                }
 
-                    // openAlertDialog가 클릭 됐을 경우 true 아니면 false
-                    when {
-                        openAlertDialog.value -> {
-                            DeleteDialogExample(
-                                onDismissRequest = { openAlertDialog.value = false },
-                                onConfirmation = {
-                                    openAlertDialog.value = false
-                                    println("Confirmation registered") // Add logic here to handle confirmation.
-                                },
-                                dialogTitle = "구독 취소 알림",
-                                dialogText = "${model.bookTitle}구독을 취소하시겠습니까?",
-                            )
-                        }
+                // openAlertDialog가 클릭 됐을 경우 true 아니면 false
+                when {
+                    openAlertDialog.value -> {
+                        DeleteDialogExample(
+                            onDismissRequest = { openAlertDialog.value = false },
+                            onConfirmation = {
+                                openAlertDialog.value = false
+                                println("Confirmation registered") // Add logic here to handle confirmation.
+                            },
+                            dialogTitle = "구독 취소 알림",
+                            dialogText = "${model.bookTitle}구독을 취소하시겠습니까?",
+                        )
                     }
                 }
             }
