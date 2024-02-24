@@ -56,9 +56,10 @@ import com.example.audiobook.lazycolumn.LazyColumns
 import com.example.audiobook.model.MySubscribeModel
 import com.example.audiobook.ui.theme.AudioBookTheme
 
-val lazyColumnComponent = LazyColumns()
-
 class MainActivity : ComponentActivity() {
+
+    val lazyColumnComponent = LazyColumns(this@MainActivity)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -73,60 +74,59 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
 
-// 콘텐츠 구현
+    // 콘텐츠 구현
 // TopAppBar : https://developer.android.com/jetpack/compose/components/app-bars?hl=ko
 // LazyColumn : https://makb.medium.com/listview-recyclerview-using-android-jetpack-compose-lazycolumn-ad905f52bf09
-@OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Composable
-fun SetActivity() {
-    Scaffold (
-        topBar = { // 헤더 구현
-            val context = LocalContext.current
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.White,
-                    titleContentColor = Color.Black
-                ),
-                title = {
-                    Text("관심도서")
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
-                            Toast.makeText(context, "검색버튼 클릭", Toast.LENGTH_SHORT).show()
+    @OptIn(ExperimentalMaterial3Api::class)
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    @Composable
+    fun SetActivity() {
+        Scaffold (
+            topBar = { // 헤더 구현
+                val context = LocalContext.current
+                CenterAlignedTopAppBar(
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = Color.White,
+                        titleContentColor = Color.Black
+                    ),
+                    title = {
+                        Text("관심도서")
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = {
+                                Toast.makeText(context, "검색버튼 클릭", Toast.LENGTH_SHORT).show()
+                            }
+                        ) {
+                            Icon(
+                                Icons.Filled.Search,
+                                contentDescription = "도서검색 아이콘"
+                            )
                         }
-                    ) {
-                        Icon(
-                            Icons.Filled.Search,
-                            contentDescription = "도서검색 아이콘"
-                        )
-                    }
-                    IconButton(
-                        onClick = {
-                            Toast.makeText(context, "마이페이지 클릭", Toast.LENGTH_SHORT).show()
+                        IconButton(
+                            onClick = {
+                                Toast.makeText(context, "마이페이지 클릭", Toast.LENGTH_SHORT).show()
+                            }
+                        ) {
+                            Icon(
+                                Icons.Filled.Person,
+                                contentDescription = "마이페이지 아이콘"
+                            )
                         }
-                    ) {
-                        Icon(
-                            Icons.Filled.Person,
-                            contentDescription = "마이페이지 아이콘"
-                        )
                     }
-                }
-            )
+                )
+            }
+        ) {
+            // 나의 구독 목록 호출
+            lazyColumnComponent.mySubscribeList(it)
         }
-    ) {
-        // 나의 구독 목록 호출
-        lazyColumnComponent.mySubscribeList(it)
+    }
+
+    @Preview
+    @Composable
+    fun PreviewGreeting() {
+        SetActivity()
     }
 }
 
-
-
-@Preview
-@Composable
-fun PreviewGreeting() {
-    SetActivity()
-}
