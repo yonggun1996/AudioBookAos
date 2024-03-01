@@ -171,6 +171,7 @@ class LazyColumns (activity: Activity){
             action = Intent.ACTION_SEND
             putExtra("bookInfo", model)
         }
+        activity.overridePendingTransition(R.anim.slideright, R.anim.slideleft)
         activity.startActivity(intent)
     }
 }
