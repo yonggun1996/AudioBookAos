@@ -16,8 +16,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.DropdownMenuItem
@@ -45,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -83,7 +86,6 @@ class PlayActivity : ComponentActivity() {
         Column (
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.Green)
                 .padding(30.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -196,12 +198,42 @@ class PlayActivity : ComponentActivity() {
             )
         }
         Row (
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Image(
+                modifier = Modifier
+                    .size(75.dp)
+                    .clickable {
+                        Toast
+                            .makeText(this@PlayActivity, "되돌리기 버튼 클릭", Toast.LENGTH_SHORT)
+                            .show()
+                    },
+                painter = painterResource(id = R.drawable.rollback),
+                contentDescription = "되돌리기 버튼"
+            )
+            Spacer(modifier = Modifier.width(10.dp)) // 간격을 두기 위한 코드
 
-            //PlaySpeedDropDown()
+            var audioControllResource = R.drawable.play
+            if (isPlaying.value) audioControllResource = R.drawable.pause // 재생중인경우 일시정지 버튼 설정
+
+            Image(
+                modifier = Modifier
+                    .size(75.dp)
+                    .clickable {
+                        Toast
+                            .makeText(this@PlayActivity, "재생 버튼 클릭", Toast.LENGTH_SHORT)
+                            .show()
+                    },
+                painter = painterResource(id = audioControllResource),
+                contentDescription = "되돌리기 버튼"
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+
+            PlaySpeedDropDown()
         }
     }
 
@@ -219,7 +251,9 @@ class PlayActivity : ComponentActivity() {
         }
 
         ExposedDropdownMenuBox(
-            modifier = Modifier.size(125.dp),
+            modifier = Modifier
+                .height(50.dp)
+                .width(110.dp),
             expanded = isExpanded,
             onExpandedChange = {
                 isExpanded = !isExpanded
@@ -232,7 +266,7 @@ class PlayActivity : ComponentActivity() {
                 readOnly = true,
                 trailingIcon = {ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)}
             )
-            
+
             ExposedDropdownMenu(expanded = isExpanded, onDismissRequest = { isExpanded = false }) {
                 playSpeedList.forEachIndexed { index, text ->
                     DropdownMenuItem(
