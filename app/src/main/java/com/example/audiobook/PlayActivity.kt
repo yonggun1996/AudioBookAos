@@ -1,11 +1,15 @@
 package com.example.audiobook
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,7 +20,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuBoxScope
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +33,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,6 +42,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,6 +54,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.audiobook.model.MySubscribeModel
 import com.example.audiobook.ui.theme.AudioBookTheme
@@ -184,8 +195,60 @@ class PlayActivity : ComponentActivity() {
                 style = TextStyle(fontWeight = FontWeight.Bold)
             )
         }
+        Row (
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            //PlaySpeedDropDown()
+        }
     }
 
+    /* 재생 속도 조절 드랍다운 */
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun PlaySpeedDropDown() {
+        val playSpeedList = listOf("x 0.5", "x 1.0", "x 1.5", "x 2.0")
+        var isExpanded by remember {
+            mutableStateOf(false)
+        }
+
+        var selectedSpeed by remember {
+            mutableStateOf(playSpeedList[1])
+        }
+
+        ExposedDropdownMenuBox(
+            modifier = Modifier.size(125.dp),
+            expanded = isExpanded,
+            onExpandedChange = {
+                isExpanded = !isExpanded
+            }
+        ) {
+            TextField(
+                modifier = Modifier.menuAnchor(),
+                value = selectedSpeed,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = {ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded)}
+            )
+            
+            ExposedDropdownMenu(expanded = isExpanded, onDismissRequest = { isExpanded = false }) {
+                playSpeedList.forEachIndexed { index, text ->
+                    DropdownMenuItem(
+                        text = { Text(text = text) },
+                        onClick = {
+                            selectedSpeed = playSpeedList[index]
+                            isExpanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                    )
+                }
+            }
+        }
+    }
+
+    /* Long타입의 데이터를 시간 문자열로 변환 */
     private fun Long.convertToText(): String {
         val sec = this / 1000
         val minutes = sec / 60
