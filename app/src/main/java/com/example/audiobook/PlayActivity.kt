@@ -58,11 +58,18 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.RawResourceDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import com.example.audiobook.model.MySubscribeModel
 import com.example.audiobook.ui.theme.AudioBookTheme
 import kotlinx.coroutines.delay
 
+/*
+ * 음악 실행 화면 구현
+ * https://alitalhacoban.medium.com/build-music-player-with-jetpack-compose-media3-exoplayer-cf3d44a0a67a
+ */
 class PlayActivity : ComponentActivity() {
 
     lateinit var bookInfo: MySubscribeModel // 메인 페이지에서 전달한 책 정보
@@ -119,9 +126,21 @@ class PlayActivity : ComponentActivity() {
         }
     }
 
-    @Composable
+    @androidx.annotation.OptIn(UnstableApi::class) @Composable
     fun MusicPlayerSlide() {
-        val exoPlayer = ExoPlayer.Builder(LocalContext.current).build()
+        val exoPlayer = ExoPlayer.Builder(this).build()
+//        val mediaItem =
+//            MediaItem.fromUri(RawResourceDataSource.buildRawResourceUri(R.raw.test_music))
+
+        val path = "android.resource://${packageName}/${R.raw.test_music}"
+        Log.d("MusicPlayerSlide", "path: ${path}")
+        val mediaItem = MediaItem.fromUri(Uri.parse(path))
+        exoPlayer.addMediaItem(mediaItem)
+
+//        exoPlayer.setMediaItem(mediaItem)
+        exoPlayer.prepare()
+
+        Log.d("MusicPlayerSlide", "mediaItem: ${mediaItem.toString()}")
 
         // 현재 음성파일이 실행중인지 저장하는 변수
         val isPlaying = remember {
@@ -142,6 +161,16 @@ class PlayActivity : ComponentActivity() {
         val totalDuration = remember {
             mutableLongStateOf(0)
         }
+
+        exoPlayer.addListener(object : Player.Listener{
+            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                super.onPlayerStateChanged(playWhenReady, playbackState)
+                if (playbackState == ExoPlayer.STATE_READY) {
+                    Log.d("MusicPlayerSlide", "exoPlayer.duration :  ${exoPlayer.duration}")
+                    totalDuration.longValue = exoPlayer.duration
+                }
+            }
+        })
 
         LaunchedEffect(key1 = exoPlayer.currentPosition, key2 = exoPlayer.isPlaying) {
             delay(1000)
@@ -224,9 +253,12 @@ class PlayActivity : ComponentActivity() {
                 modifier = Modifier
                     .size(75.dp)
                     .clickable {
-                        Toast
-                            .makeText(this@PlayActivity, "재생 버튼 클릭", Toast.LENGTH_SHORT)
-                            .show()
+                        if (isPlaying.value) {
+                            exoPlayer.pause()
+                        } else {
+                            exoPlayer.play()
+                        }
+                        isPlaying.value = isPlaying.value.not()
                     },
                 painter = painterResource(id = audioControllResource),
                 contentDescription = "되돌리기 버튼"
